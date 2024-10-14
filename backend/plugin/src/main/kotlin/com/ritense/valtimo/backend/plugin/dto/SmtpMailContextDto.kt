@@ -25,10 +25,3 @@ data class SmtpMailContextDto(
     val contentResourceId: String,
     val attachmentResourceIds: List<String>
 )
-
-@JvmInline
-value class Email(val address: String) {
-    init {
-        require(address.matches(Regex("^[A-Za-z0-9+_.-]+@(.+)$"))) { "$address is not a valid email address" }
-    }
-}

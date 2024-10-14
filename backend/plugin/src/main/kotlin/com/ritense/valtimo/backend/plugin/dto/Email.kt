@@ -16,13 +16,8 @@
 
 package com.ritense.valtimo.backend.plugin.dto
 
-data class SmtpMailPluginPropertyDto(
-    val host: String,
-    val port: Int,
-    val username: String?,
-    val password: String?,
-    val protocol: String,
-    val debug: Boolean,
-    val auth: Boolean,
-    val startTlsEnable: Boolean,
+import com.fasterxml.jackson.annotation.JsonValue
+
+data class Email(
+    @JsonValue val address: String
 )

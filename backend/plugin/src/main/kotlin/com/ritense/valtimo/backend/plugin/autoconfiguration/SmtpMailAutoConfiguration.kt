@@ -50,10 +50,8 @@ class SmtpMailAutoConfiguration {
     fun smtpMailPluginFactory(
         pluginService: PluginService,
         smtpMailService: SmtpMailService,
-        valueResolverService: ValueResolverService
     ): SmtpMailPluginFactory = SmtpMailPluginFactory(
         pluginService = pluginService,
         smtpMailService = smtpMailService,
-        valueResolverService = valueResolverService
     )
 }

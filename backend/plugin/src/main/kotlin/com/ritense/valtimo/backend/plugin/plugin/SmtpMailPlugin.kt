@@ -25,7 +25,6 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_STA
 import com.ritense.valtimo.backend.plugin.dto.Email
 import com.ritense.valtimo.backend.plugin.dto.SmtpMailContextDto
 import com.ritense.valtimo.backend.plugin.service.SmtpMailService
-import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 
 @Plugin(
@@ -35,14 +34,13 @@ import org.camunda.bpm.engine.delegate.DelegateExecution
 )
 class SmtpMailPlugin(
     private val smtpMailService: SmtpMailService,
-    private val valueResolverService: ValueResolverService
 ) {
 
     @PluginProperty(key = "host", secret = false, required = true)
     lateinit var host: String
 
     @PluginProperty(key = "port", secret = false, required = true)
-    lateinit var port: String
+    var port: Int? = 25
 
     @PluginProperty(key = "username", required = false, secret = false)
     var username: String? = null
@@ -68,46 +66,26 @@ class SmtpMailPlugin(
         description = "Send an email",
         activityTypes = [SERVICE_TASK_START]
     )
-
-    @Suppress("UNCHECKED_CAST")
     fun sendMail(
         execution: DelegateExecution,
-        @PluginActionProperty sender: String,
-        @PluginActionProperty recipients: String,
-        @PluginActionProperty cc: String?,
-        @PluginActionProperty bcc: String?,
+        @PluginActionProperty sender: Email,
+        @PluginActionProperty recipients: List<Email>,
+        @PluginActionProperty cc: List<Email>?,
+        @PluginActionProperty bcc: List<Email>?,
         @PluginActionProperty subject: String,
         @PluginActionProperty contentId: String,
-        @PluginActionProperty attachmentIds: String?,
+        @PluginActionProperty attachmentIds: List<String>?,
     ) {
-        val recipientList: List<String> = (resolveValue(execution, recipients)) as List<String>? ?: emptyList()
-        val ccList: List<String> = (resolveValue(execution, cc)) as List<String>? ?: emptyList()
-        val bccList: List<String> = (resolveValue(execution, bcc)) as List<String>? ?: emptyList()
-        val attachmentIdList: List<String> = (resolveValue(execution, attachmentIds)) as List<String>? ?: emptyList()
-
         smtpMailService.sendSmtpMail(
             mailContext = SmtpMailContextDto(
-                sender = Email(resolveValue(execution, sender) as String),
-                recipients = recipientList.map { Email(it) },
-                ccList = ccList.map { Email(it) },
-                bccList = bccList.map { Email(it) },
-                subject = resolveValue(execution, subject) as String,
-                contentResourceId = resolveValue(execution, contentId) as String,
-                attachmentResourceIds = attachmentIdList
+                sender = sender,
+                recipients = recipients,
+                ccList = cc ?: emptyList(),
+                bccList = bcc ?: emptyList(),
+                subject = subject,
+                contentResourceId = contentId,
+                attachmentResourceIds = attachmentIds ?: emptyList(),
             )
         )
-    }
-
-    private fun resolveValue(execution: DelegateExecution, value: String?): Any? {
-        return if (value == null) {
-            null
-        } else {
-            val resolvedValues = valueResolverService.resolveValues(
-                execution.processInstanceId,
-                execution,
-                listOf(value)
-            )
-            resolvedValues[value]
-        }
     }
 }

@@ -28,8 +28,7 @@ import org.springframework.stereotype.Component
 class SmtpMailPluginFactory(
     pluginService: PluginService,
     private val smtpMailService: SmtpMailService,
-    private val valueResolverService: ValueResolverService
 ) : PluginFactory<SmtpMailPlugin>(pluginService) {
 
-    override fun create(): SmtpMailPlugin = SmtpMailPlugin(smtpMailService, valueResolverService)
+    override fun create(): SmtpMailPlugin = SmtpMailPlugin(smtpMailService)
 }

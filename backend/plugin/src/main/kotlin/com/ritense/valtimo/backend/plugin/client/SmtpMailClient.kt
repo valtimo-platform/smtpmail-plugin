@@ -60,14 +60,14 @@ class SmtpMailClient(
                 javaMailSender.send(message)
             }
         } catch (e: Exception) {
-            throw MailSendException("mail has failed to send. Cause: ${e.message}")
+            throw MailSendException("Failed to send mail", e)
         }
     }
 
     private fun javaMailSender(): JavaMailSender = JavaMailSenderImpl().apply {
         with(getSmtpMailPluginData()) {
             this@apply.host = host
-            this@apply.port = port.toInt()
+            this@apply.port = port
             if (username != null) this@apply.username = username
             if (password != null) this@apply.password = password
             this@apply.protocol = protocol
@@ -86,7 +86,7 @@ class SmtpMailClient(
 
         return SmtpMailPluginPropertyDto(
             host = pluginInstance.host,
-            port = pluginInstance.port,
+            port = pluginInstance.port!!,
             username = pluginInstance.username,
             password = pluginInstance.password,
             protocol = pluginInstance.protocol!!,
