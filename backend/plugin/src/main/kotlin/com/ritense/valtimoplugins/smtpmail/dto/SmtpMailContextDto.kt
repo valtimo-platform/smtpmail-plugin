@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.backend.plugin.dto
+package com.ritense.valtimoplugins.smtpmail.dto
 
-import com.fasterxml.jackson.annotation.JsonValue
-
-data class Email(
-    @JsonValue val address: String
+data class SmtpMailContextDto(
+    val sender: Email,
+    val recipients: List<Email>,
+    val ccList: List<Email>,
+    val bccList: List<Email>,
+    val subject: String,
+    val contentResourceId: String,
+    val attachmentResourceIds: List<String>
 )

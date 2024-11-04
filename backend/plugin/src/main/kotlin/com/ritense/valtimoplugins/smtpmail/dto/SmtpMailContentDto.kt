@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.backend.plugin.dto
+package com.ritense.valtimoplugins.smtpmail.dto
 
 data class SmtpMailContentDto(
     val mailMessage: String,

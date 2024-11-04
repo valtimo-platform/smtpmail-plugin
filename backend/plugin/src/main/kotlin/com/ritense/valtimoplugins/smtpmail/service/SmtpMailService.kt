@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ritense.valtimo.backend.plugin.service
+package com.ritense.valtimoplugins.smtpmail.service
 
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
-import com.ritense.valtimo.backend.plugin.client.SmtpMailClient
-import com.ritense.valtimo.backend.plugin.dto.SmtpMailContentDto
-import com.ritense.valtimo.backend.plugin.dto.SmtpMailContextDto
+import com.ritense.valtimoplugins.smtpmail.client.SmtpMailClient
+import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailContentDto
+import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailContextDto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import java.io.InputStream
 import mu.KotlinLogging

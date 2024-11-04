@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.backend.plugin.plugin
+package com.ritense.valtimoplugins.smtpmail.plugin
 
 
 import com.ritense.plugin.annotation.Plugin
@@ -22,9 +22,9 @@ import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
-import com.ritense.valtimo.backend.plugin.dto.Email
-import com.ritense.valtimo.backend.plugin.dto.SmtpMailContextDto
-import com.ritense.valtimo.backend.plugin.service.SmtpMailService
+import com.ritense.valtimoplugins.smtpmail.dto.Email
+import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailContextDto
+import com.ritense.valtimoplugins.smtpmail.service.SmtpMailService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 
 @Plugin(

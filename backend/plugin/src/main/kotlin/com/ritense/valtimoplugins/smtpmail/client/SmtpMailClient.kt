@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.backend.plugin.client
+package com.ritense.valtimoplugins.smtpmail.client
 
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
-import com.ritense.valtimo.backend.plugin.dto.SmtpMailContentDto
-import com.ritense.valtimo.backend.plugin.dto.SmtpMailContextDto
-import com.ritense.valtimo.backend.plugin.dto.SmtpMailPluginPropertyDto
-import com.ritense.valtimo.backend.plugin.plugin.SmtpMailPlugin
+import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailContentDto
+import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailContextDto
+import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailPluginPropertyDto
+import com.ritense.valtimoplugins.smtpmail.plugin.SmtpMailPlugin
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import jakarta.mail.internet.MimeMessage
 import org.springframework.mail.MailSendException

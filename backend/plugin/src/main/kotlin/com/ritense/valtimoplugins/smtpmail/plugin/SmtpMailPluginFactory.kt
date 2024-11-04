@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.backend.plugin.plugin
+package com.ritense.valtimoplugins.smtpmail.plugin
 
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
-import com.ritense.valtimo.backend.plugin.service.SmtpMailService
+import com.ritense.valtimoplugins.smtpmail.service.SmtpMailService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.stereotype.Component
