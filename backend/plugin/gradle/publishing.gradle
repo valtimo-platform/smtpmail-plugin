@@ -24,7 +24,7 @@ pluginManager.withPlugin("maven-publish") {
 
                 pom {
                     name = "SMTP mail plugin module"
-                    description = "The SMTP mail plugin module contains a plugin for sending smtp mails"
+                    description = "The SMTP mail plugin module contains a plugin for sending e-mails through an SMTP server"
                     developers {
                         developer {
                             id = "team-valtimo"
