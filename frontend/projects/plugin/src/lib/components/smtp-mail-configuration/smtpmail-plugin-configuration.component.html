@@ -1,0 +1,113 @@
+<!--
+  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<v-form
+        (valueChange)="formValueChange($event)"
+        *ngIf="{
+        disabled: disabled$ | async,
+        prefill: prefillConfiguration$ ? (prefillConfiguration$ | async) : null
+    } as obs"
+>
+    <v-input
+            name="configurationTitle"
+            [title]="'configurationTitle' | pluginTranslate: pluginId | async"
+            [margin]="true"
+            [defaultValue]="obs.prefill?.configurationTitle"
+            [disabled]="obs.disabled"
+            [required]="true"
+            [placeholder]="'SMTP Mail Plugin'"
+    >
+    </v-input>
+    <v-input
+            name="host"
+            [title]="'host' | pluginTranslate: pluginId | async"
+            [margin]="true"
+            [defaultValue]="obs.prefill?.host"
+            [disabled]="obs.disabled"
+            [required]="true"
+            [placeholder]="'smtp-mail.example.com'"
+    >
+    </v-input>
+    <v-input
+            name="port"
+            type="number"
+            [title]="'port' | pluginTranslate: pluginId | async"
+            [margin]="true"
+            [defaultValue]="obs.prefill?.port || 587"
+            [disabled]="obs.disabled"
+            [required]="true"
+    >
+    </v-input>
+    <v-input
+            name="username"
+            [title]="'username' | pluginTranslate: pluginId | async"
+            [margin]="true"
+            [defaultValue]="obs.prefill?.username"
+            [disabled]="obs.disabled"
+            [required]="false"
+    >
+    </v-input>
+    <v-input
+            name="password"
+            type="password"
+            [title]="'password' | pluginTranslate: pluginId | async"
+            [margin]="true"
+            [defaultValue]="obs.prefill?.password"
+            [disabled]="obs.disabled"
+            [required]="false"
+    >
+    </v-input>
+    <v-input
+            name="protocol"
+            [title]="'protocol' | pluginTranslate: pluginId | async"
+            [margin]="true"
+            [defaultValue]="obs.prefill?.protocol || 'smtp'"
+            [disabled]="obs.disabled"
+            [required]="false"
+            [placeholder]="'smtp'"
+    >
+    </v-input>
+    <v-input
+            name="debug"
+            type="checkbox"
+            [title]="'debug' | pluginTranslate: pluginId | async"
+            [margin]="true"
+            [defaultValue]="obs.prefill?.debug"
+            [disabled]="obs.disabled"
+            [required]="false"
+    >
+    </v-input>
+    <v-input
+            name="auth"
+            type="checkbox"
+            [title]="'auth' | pluginTranslate: pluginId | async"
+            [margin]="true"
+            [defaultValue]="obs.prefill?.auth || true"
+            [disabled]="obs.disabled"
+            [required]="false"
+    >
+    </v-input>
+    <v-input
+            name="startTlsEnable"
+            type="checkbox"
+            [title]="'startTlsEnable' | pluginTranslate: pluginId | async"
+            [margin]="true"
+            [defaultValue]="obs.prefill?.startTlsEnable || true"
+            [disabled]="obs.disabled"
+            [required]="false"
+    >
+    </v-input>
+</v-form>

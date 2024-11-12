@@ -1,0 +1,101 @@
+<!--
+  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<v-form
+        (valueChange)="formValueChange($event)"
+        *ngIf="{
+        disabled: disabled$ | async,
+        prefill: prefillConfiguration$ ? (prefillConfiguration$ | async) : null
+    } as obs"
+    >
+    <v-input
+            name="sender"
+            [title]="'sender' | pluginTranslate: pluginId | async"
+            [margin]="true"
+            [defaultValue]="obs.prefill?.sender"
+            [disabled]="obs.disabled"
+            [required]="true"
+            [placeholder]="'senderPlaceholder' | pluginTranslate: pluginId | async"
+            [tooltip]="'senderTooltip' | pluginTranslate: pluginId | async"
+    >
+    </v-input>
+    <v-input
+            name="recipients"
+            [title]="'recipients' | pluginTranslate: pluginId | async"
+            [margin]="true"
+            [defaultValue]="obs.prefill?.recipients"
+            [disabled]="obs.disabled"
+            [required]="true"
+            [placeholder]="'pv:recipients'"
+            [tooltip]="'recipientsTooltip' | pluginTranslate: pluginId | async"
+    >
+    </v-input>
+    <v-input
+            name="cc"
+            [title]="'cc' | pluginTranslate: pluginId | async"
+            [margin]="true"
+            [defaultValue]="obs.prefill?.cc"
+            [disabled]="obs.disabled"
+            [required]="false"
+            [placeholder]="'pv:cc'"
+            [tooltip]="'ccTooltip' | pluginTranslate: pluginId | async"
+    >
+    </v-input>
+    <v-input
+            name="bcc"
+            [title]="'bcc' | pluginTranslate: pluginId | async"
+            [margin]="true"
+            [defaultValue]="obs.prefill?.bcc"
+            [disabled]="obs.disabled"
+            [required]="false"
+            [placeholder]="'pv:bcc'"
+            [tooltip]="'bccTooltip' | pluginTranslate: pluginId | async"
+    >
+    </v-input>
+    <v-input
+            name="subject"
+            [title]="'subject' | pluginTranslate: pluginId | async"
+            [margin]="true"
+            [defaultValue]="obs.prefill?.subject"
+            [disabled]="obs.disabled"
+            [required]="true"
+            [placeholder]="'subjectPlaceholder' | pluginTranslate: pluginId | async"
+            [tooltip]="'subjectTooltip' | pluginTranslate: pluginId | async"
+    >
+    </v-input>
+    <v-input
+            name="contentId"
+            [title]="'contentId' | pluginTranslate: pluginId | async"
+            [margin]="true"
+            [defaultValue]="obs.prefill?.contentId || 'pv:contentId'"
+            [disabled]="obs.disabled"
+            [required]="true"
+            [placeholder]="'pv:contentId'"
+            [tooltip]="'contentIdTooltip' | pluginTranslate: pluginId | async"
+    >
+    </v-input>
+    <v-input
+            name="attachmentIds"
+            [title]="'attachments' | pluginTranslate: pluginId | async"
+            [margin]="true"
+            [defaultValue]="obs.prefill?.attachmentIds"
+            [disabled]="obs.disabled"
+            [required]="false"
+            [placeholder]="'pv:attachmentIds'"
+            [tooltip]="'attachmentIdsTooltip' | pluginTranslate: pluginId | async"
+    >
+    </v-input>
+</v-form>
