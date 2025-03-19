@@ -69,6 +69,7 @@ class SmtpMailPlugin(
     fun sendMail(
         execution: DelegateExecution,
         @PluginActionProperty sender: Email,
+        @PluginActionProperty fromName: String?,
         @PluginActionProperty recipients: List<Email>,
         @PluginActionProperty cc: List<Email>?,
         @PluginActionProperty bcc: List<Email>?,
@@ -79,6 +80,7 @@ class SmtpMailPlugin(
         smtpMailService.sendSmtpMail(
             mailContext = SmtpMailContextDto(
                 sender = sender,
+                fromName = fromName.takeIf { !it.isNullOrBlank() } ?: sender.address,
                 recipients = recipients,
                 ccList = cc ?: emptyList(),
                 bccList = bcc ?: emptyList(),
