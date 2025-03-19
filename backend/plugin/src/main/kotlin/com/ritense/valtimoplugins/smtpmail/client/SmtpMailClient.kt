@@ -47,7 +47,7 @@ class SmtpMailClient(
             val message: MimeMessage = javaMailSender.createMimeMessage()
 
             with(MimeMessageHelper(message, true)) {
-                setFrom(mailContext.sender.address)
+                setFrom(mailContext.sender.address,mailContext.fromName)
                 mailContext.recipients.forEach { addTo(it.address) }
                 mailContext.ccList.forEach { addCc(it.address) }
                 mailContext.bccList.forEach { addBcc(it.address) }

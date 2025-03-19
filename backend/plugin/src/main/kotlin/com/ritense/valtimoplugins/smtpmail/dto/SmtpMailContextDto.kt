@@ -18,6 +18,7 @@ package com.ritense.valtimoplugins.smtpmail.dto
 
 data class SmtpMailContextDto(
     val sender: Email,
+    val fromName: String,
     val recipients: List<Email>,
     val ccList: List<Email>,
     val bccList: List<Email>,
