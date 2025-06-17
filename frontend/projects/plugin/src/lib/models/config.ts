@@ -29,6 +29,7 @@ interface SmtpMailConfig extends PluginConfigurationData {
 
 interface SendMailConfig {
     sender: string;
+    fromName: string;
     recipients: string;
     cc: string;
     bcc: string;

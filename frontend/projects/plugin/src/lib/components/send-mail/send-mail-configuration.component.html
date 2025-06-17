@@ -33,6 +33,17 @@
     >
     </v-input>
     <v-input
+            name="fromName"
+            [title]="'fromName' | pluginTranslate: pluginId | async"
+            [margin]="true"
+            [defaultValue]="obs.prefill?.fromName"
+            [disabled]="obs.disabled"
+            [required]="false"
+            [placeholder]="'fromNamePlaceholder' | pluginTranslate: pluginId | async"
+            [tooltip]="'fromNameTooltip' | pluginTranslate: pluginId | async"
+    >
+    </v-input>
+    <v-input
             name="recipients"
             [title]="'recipients' | pluginTranslate: pluginId | async"
             [margin]="true"

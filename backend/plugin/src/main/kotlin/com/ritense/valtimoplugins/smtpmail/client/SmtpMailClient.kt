@@ -47,7 +47,7 @@ class SmtpMailClient(
             val message: MimeMessage = javaMailSender.createMimeMessage()
 
             with(MimeMessageHelper(message, true)) {
-                setFrom(mailContext.sender.address)
+                setFrom(mailContext.sender.address,mailContext.fromName)
                 mailContext.recipients.forEach { addTo(it.address) }
                 mailContext.ccList.forEach { addCc(it.address) }
                 mailContext.bccList.forEach { addBcc(it.address) }
@@ -73,7 +73,11 @@ class SmtpMailClient(
             this@apply.protocol = protocol
             this@apply.javaMailProperties["mail.transport.protocol"] = protocol
             this@apply.javaMailProperties["mail.smtp.auth"] = auth
-            this@apply.javaMailProperties["mail.smtp.starttls.enable"] = startTlsEnable
+            if(startTlsEnable) {
+                this@apply.javaMailProperties["mail.smtp.starttls.enable"] = true
+                this@apply.javaMailProperties["mail.smtp.socketFactory.class"] = "javax.net.ssl.SSLSocketFactory"
+                this@apply.javaMailProperties["mail.smtp.socketFactory.port"] = port.toString()
+            }
             this@apply.javaMailProperties["mail.debug"] = debug
         }
     }
