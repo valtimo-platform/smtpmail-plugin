@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-/*
- * Public API Surface of smtpmail
- */
+package com.ritense.valtimoplugins.smtpmail.dto
 
-export * from './lib/models';
-export * from './lib/smtpmail.plugin.module';
-export * from './lib/smtpmail.plugin.specification';
-export * from './lib/components/smtp-mail-configuration/smtpmail-plugin-configuration.component';
-export * from './lib/components/send-mail/send-mail-configuration.component';
+data class SmtpMailPluginPropertyDto(
+    val host: String,
+    val port: Int,
+    val username: String?,
+    val password: String?,
+    val protocol: String,
+    val debug: Boolean,
+    val auth: Boolean,
+    val startTlsEnable: Boolean,
+)

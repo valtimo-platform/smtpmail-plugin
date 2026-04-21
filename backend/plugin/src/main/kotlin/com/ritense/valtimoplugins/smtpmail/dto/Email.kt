@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-/*
- * Public API Surface of smtpmail
- */
+package com.ritense.valtimoplugins.smtpmail.dto
 
-export * from './lib/models';
-export * from './lib/smtpmail.plugin.module';
-export * from './lib/smtpmail.plugin.specification';
-export * from './lib/components/smtp-mail-configuration/smtpmail-plugin-configuration.component';
-export * from './lib/components/send-mail/send-mail-configuration.component';
+import com.fasterxml.jackson.annotation.JsonValue
+
+data class Email(
+    @JsonValue val address: String
+)

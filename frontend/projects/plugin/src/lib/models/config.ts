@@ -14,12 +14,31 @@
  * limitations under the License.
  */
 
-/*
- * Public API Surface of smtpmail
- */
+import {PluginConfigurationData} from '@valtimo/plugin';
 
-export * from './lib/models';
-export * from './lib/smtpmail.plugin.module';
-export * from './lib/smtpmail.plugin.specification';
-export * from './lib/components/smtp-mail-configuration/smtpmail-plugin-configuration.component';
-export * from './lib/components/send-mail/send-mail-configuration.component';
+interface SmtpMailConfig extends PluginConfigurationData {
+    host: string;
+    port: number;
+    username: string;
+    password: string;
+    protocol: string;
+    debug: boolean;
+    auth: boolean;
+    startTlsEnable: boolean;
+}
+
+interface SendMailConfig {
+    sender: string;
+    fromName: string;
+    recipients: string;
+    cc: string;
+    bcc: string;
+    subject: string;
+    contentId: string;
+    attachmentIds: string;
+}
+
+export {
+    SmtpMailConfig,
+    SendMailConfig
+};

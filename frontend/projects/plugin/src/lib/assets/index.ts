@@ -14,12 +14,4 @@
  * limitations under the License.
  */
 
-/*
- * Public API Surface of smtpmail
- */
-
-export * from './lib/models';
-export * from './lib/smtpmail.plugin.module';
-export * from './lib/smtpmail.plugin.specification';
-export * from './lib/components/smtp-mail-configuration/smtpmail-plugin-configuration.component';
-export * from './lib/components/send-mail/send-mail-configuration.component';
+export * from './smtpmail-plugin-logo';
