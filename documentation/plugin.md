@@ -8,8 +8,8 @@
     * [Plugin configuration](#plugin-configuration)
     * [Plugin action: Send Mail](#plugin-action-send-mail)
     * [Prepare mail contents](#prepare-mail-contents)
-      * [Mail template plugin](#mail-template-plugin)
-      * [Text template plugin](#text-template-plugin)
+      * [Mail Smtpmail Plugin](#mail-template-plugin)
+      * [Text Smtpmail Plugin](#text-template-plugin)
   * [Development](#development)
     * [Source code](#source-code)
     * [Dependencies](#dependencies)
@@ -22,7 +22,7 @@
 ## Description
 Send mail through SMTP with the SMTP mail plugin. 
 
-> Tip: The SMTP mail Plugin can be used together with the [Mail Template Plugin](../freemarker/README.md), see [prepare step](#prepare-email-with-the-mail-template-plugin)
+> Tip: The SMTP mail Plugin can be used together with the [Mail Smtpmail Plugin](../freemarker/README.md), see [prepare step](#prepare-email-with-the-mail-template-plugin)
 
 ### Requirements
 Before you can use the SMTP mail Plugin, you need to:
@@ -58,12 +58,12 @@ Create process link between a BPMN service task and the desired plugin action.
 ### Prepare mail contents
 There are 2 plugins available to generate the contents of an email:
 
-#### Mail template plugin
+#### Mail Smtpmail Plugin
 Generate Mail contents with plugin action `Generate Mail File` with a case mail template
 * `mailTemplateKey` - A Case Mail template  
 * `processVariableName` - process variable name of the generated mail contents
 
-#### Text template plugin
+#### Text Smtpmail Plugin
 Generate Mail File with plugin action `Generate Text Filee`, select a case text template
 * `textTemplateKey` - Text Template
 * `processVariableName` - process variable name of the generated mail contents
