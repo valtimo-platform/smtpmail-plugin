@@ -1,6 +1,6 @@
 spring:
   application:
-    name: plugin-sandbox-application
+    name: smtpmail-plugin-application
   profiles:
     active: dev
   jackson:
