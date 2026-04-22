@@ -19,5 +19,5 @@ package com.ritense.valtimoplugins.smtpmail.dto
 import com.fasterxml.jackson.annotation.JsonValue
 
 data class Email(
-    @JsonValue val address: String
+    @JsonValue val address: String,
 )

@@ -22,8 +22,7 @@ import {FormModule, InputModule} from '@valtimo/components';
 import {SendMailConfigurationComponent} from "./components/send-mail/send-mail-configuration.component";
 
 @NgModule({
-  declarations: [SmtpMailPluginConfigurationComponent, SendMailConfigurationComponent],
-  imports: [CommonModule, PluginTranslatePipeModule, FormModule, InputModule],
+  imports: [SmtpMailPluginConfigurationComponent, SendMailConfigurationComponent],
   exports: [SmtpMailPluginConfigurationComponent, SendMailConfigurationComponent]
 })
 export class SmtpMailPluginModule {}

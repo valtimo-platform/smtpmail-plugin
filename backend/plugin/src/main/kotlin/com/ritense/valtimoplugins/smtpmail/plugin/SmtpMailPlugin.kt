@@ -16,7 +16,6 @@
 
 package com.ritense.valtimoplugins.smtpmail.plugin
 
-
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -30,12 +29,11 @@ import org.operaton.bpm.engine.delegate.DelegateExecution
 @Plugin(
     key = "smtp-mail",
     title = "SMTP mail Plugin",
-    description = "Send mail through SMTP with the SMTP mail plugin"
+    description = "Send mail through SMTP with the SMTP mail plugin",
 )
 class SmtpMailPlugin(
     private val smtpMailService: SmtpMailService,
 ) {
-
     @PluginProperty(key = "host", secret = false, required = true)
     lateinit var host: String
 
@@ -64,7 +62,7 @@ class SmtpMailPlugin(
         key = "send-mail",
         title = "Send mail",
         description = "Send an email",
-        activityTypes = [SERVICE_TASK_START]
+        activityTypes = [SERVICE_TASK_START],
     )
     fun sendMail(
         execution: DelegateExecution,
@@ -78,16 +76,17 @@ class SmtpMailPlugin(
         @PluginActionProperty attachmentIds: List<String>?,
     ) {
         smtpMailService.sendSmtpMail(
-            mailContext = SmtpMailContextDto(
-                sender = sender,
-                fromName = fromName.takeIf { !it.isNullOrBlank() } ?: sender.address,
-                recipients = recipients,
-                ccList = cc ?: emptyList(),
-                bccList = bcc ?: emptyList(),
-                subject = subject,
-                contentResourceId = contentId,
-                attachmentResourceIds = attachmentIds ?: emptyList(),
-            )
+            mailContext =
+                SmtpMailContextDto(
+                    sender = sender,
+                    fromName = fromName.takeIf { !it.isNullOrBlank() } ?: sender.address,
+                    recipients = recipients,
+                    ccList = cc ?: emptyList(),
+                    bccList = bcc ?: emptyList(),
+                    subject = subject,
+                    contentResourceId = contentId,
+                    attachmentResourceIds = attachmentIds ?: emptyList(),
+                ),
         )
     }
 }

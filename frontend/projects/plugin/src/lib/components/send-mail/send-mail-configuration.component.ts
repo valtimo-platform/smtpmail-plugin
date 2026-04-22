@@ -18,11 +18,16 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angula
 import {FunctionConfigurationComponent} from '@valtimo/plugin';
 import {BehaviorSubject, combineLatest, Observable, Subscription, take} from 'rxjs';
 import {SendMailConfig} from '../../models';
+import {CommonModule} from '@angular/common';
+import {PluginTranslatePipeModule} from '@valtimo/plugin';
+import {FormModule, InputModule} from '@valtimo/components';
 
 
 @Component({
   selector: 'valtimo-send-mail-configuration',
   templateUrl: './send-mail-configuration.component.html',
+  standalone: true,
+  imports: [CommonModule, PluginTranslatePipeModule, FormModule, InputModule]
 })
 
 export class SendMailConfigurationComponent implements FunctionConfigurationComponent, OnInit, OnDestroy {

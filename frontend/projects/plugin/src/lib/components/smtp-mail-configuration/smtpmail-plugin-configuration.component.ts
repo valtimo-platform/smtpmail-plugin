@@ -18,10 +18,15 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angula
 import {PluginConfigurationComponent} from '@valtimo/plugin';
 import {BehaviorSubject, combineLatest, Observable, Subscription, take} from 'rxjs';
 import {SmtpMailConfig} from '../../models';
+import {CommonModule} from '@angular/common';
+import {PluginTranslatePipeModule} from '@valtimo/plugin';
+import {FormModule, InputModule} from '@valtimo/components';
 
 @Component({
   selector: 'smtpmail-plugin-configuration',
-  templateUrl: './smtpmail-plugin-configuration.component.html'
+  templateUrl: './smtpmail-plugin-configuration.component.html',
+  standalone: true,
+  imports: [CommonModule, PluginTranslatePipeModule, FormModule, InputModule]
 })
 export class SmtpMailPluginConfigurationComponent
   // The component explicitly implements the PluginConfigurationComponent interface

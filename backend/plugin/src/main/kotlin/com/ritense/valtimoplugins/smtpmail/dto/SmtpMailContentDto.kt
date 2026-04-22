@@ -18,11 +18,10 @@ package com.ritense.valtimoplugins.smtpmail.dto
 
 data class SmtpMailContentDto(
     val mailMessage: String,
-    val attachments: List<Attachment>
+    val attachments: List<Attachment>,
 ) {
-
     data class Attachment(
         val fileName: String,
-        val fileResourceId: String
+        val fileResourceId: String,
     )
 }
