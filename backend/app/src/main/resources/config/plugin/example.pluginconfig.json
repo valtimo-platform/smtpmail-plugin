@@ -1,10 +1,17 @@
 [
     {
-        "id": "4ac9a49f-4aeb-4f91-86d9-853fd95a1b33",
-        "title": "Smtpmail plugin (Autodeployed)",
-        "pluginDefinitionKey": "smtpmail",
+        "id": "531935ce-e9ae-45d7-bf1a-08993e358482",
+        "title": "SMTP mail configuration (Autodeployed)",
+        "pluginDefinitionKey": "smtp-mail",
         "properties": {
-            "apiUrl": "https://timeapi.io/api/time/current/zone?timeZone=Europe/Amsterdam"
+            "host": "${SMTP_MAIL_CONFIGURATION_HOST}",
+            "port": "${SMTP_MAIL_CONFIGURATION_PORT}",
+            "username": "${SMTP_MAIL_CONFIGURATION_USERNAME}",
+            "password": "${SMTP_MAIL_CONFIGURATION_PASSWORD}",
+            "auth": true,
+            "protocol": "smtp",
+            "debug": true,
+            "startTlsEnable": true
         }
     }
 ]

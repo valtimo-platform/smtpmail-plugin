@@ -35,12 +35,9 @@ export class SmtpMailPluginConfigurationComponent
   @Input() save$: Observable<void>;
   @Input() disabled$: Observable<boolean>;
   @Input() pluginId: string;
-  // If the plugin had already been saved, a prefill configuration of the type SamplePluginConfig is expected
   @Input() prefillConfiguration$: Observable<SmtpMailConfig>;
 
-  // If the configuration data changes, output whether the data is valid or not
   @Output() valid: EventEmitter<boolean> = new EventEmitter<boolean>();
-  // If the configuration is valid, output a configuration of the type SamplePluginConfig
   @Output() configuration: EventEmitter<SmtpMailConfig> =
     new EventEmitter<SmtpMailConfig>();
 

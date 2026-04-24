@@ -22,7 +22,7 @@ dockerCompose {
     isRequiredBy(project.tasks.integrationTesting)
 
     tasks.integrationTesting {
-        useComposeFiles.addAll("$rootDir/docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+        useComposeFiles.addAll("$rootDir/docker-resources/docker-compose-base-test.yml")
     }
 }
 
@@ -33,7 +33,7 @@ dependencies {
     compileOnly("com.ritense.valtimo:value-resolver")
 
     compileOnly("org.springframework.boot:spring-boot-starter-webflux")
-    compileOnly("org.springframework.boot:spring-boot-starter-mail")
+    implementation("org.springframework.boot:spring-boot-starter-mail")
     compileOnly("org.springframework.boot:spring-boot-starter-web")
 
     compileOnly("io.github.oshai:kotlin-logging-jvm:$kotlinLoggingVersion")
@@ -42,31 +42,14 @@ dependencies {
     compileOnly("com.fasterxml.jackson.core:jackson-core")
 
     // Testing
-    testImplementation("com.ritense.valtimo:document")
-    testImplementation("com.ritense.valtimo:local-resource")
-    testImplementation("com.ritense.valtimo:process-document")
+    testImplementation("com.ritense.valtimo:building-block")
+    testImplementation("com.ritense.valtimo:contract")
+    testImplementation("com.ritense.valtimo:core")
+    testImplementation("com.ritense.valtimo:plugin")
+    testImplementation("com.ritense.valtimo:temporary-resource-storage")
     testImplementation("com.ritense.valtimo:test-utils-common")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-data-jpa")
-
-    testImplementation("com.fasterxml.jackson.core:jackson-databind")
-    testImplementation("com.fasterxml.jackson.core:jackson-annotations")
-    testImplementation("com.fasterxml.jackson.core:jackson-core")
-    testImplementation("org.junit.jupiter:junit-jupiter-migrationsupport")
-    testImplementation("org.assertj:assertj-core")
-    testImplementation("org.mockito:mockito-core")
-    testImplementation("org.hamcrest:hamcrest-library")
-    testImplementation("com.jayway.jsonpath:json-path")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
-
-    testImplementation("org.postgresql:postgresql")
-
-    testImplementation("com.squareup.okhttp3:mockwebserver")
-    testImplementation("com.squareup.okhttp3:okhttp")
-
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 }
 
 apply(from = "gradle/publishing.gradle")

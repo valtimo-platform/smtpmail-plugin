@@ -50,6 +50,7 @@ The application has a few test users that are preconfigured.
 ## Plugin development
 
 The plugin source code is located in:
+
 - Backend: `backend/plugin/src/`
 - Frontend: `frontend/projects/plugin/src/`
 

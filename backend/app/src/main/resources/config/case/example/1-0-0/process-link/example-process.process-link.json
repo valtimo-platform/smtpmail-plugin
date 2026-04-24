@@ -6,14 +6,20 @@
         "formDefinitionName": "start-form-example"
     },
     {
-        "activityId": "smtpmail-action",
+        "activityId": "send-mail",
         "activityType": "bpmn:ServiceTask:start",
+        "pluginConfigurationId": "531935ce-e9ae-45d7-bf1a-08993e358482",
+        "pluginActionDefinitionKey": "send-mail",
         "processLinkType": "plugin",
-        "pluginDefinitionKey": "smtpmail",
-        "pluginActionDefinitionKey": "smtpmail-action",
-        "pluginConfigurationId": "4ac9a49f-4aeb-4f91-86d9-853fd95a1b33",
         "actionProperties": {
-            "message": "Hello from the smtpmail plugin!"
+            "sender": "noreply@roza.rotterdam.nl",
+            "fromName": "Carola Schouten",
+            "recipients": "doc:recipients",
+            "cc": null,
+            "bcc": null,
+            "subject": "Test",
+            "contentId": "pv:contentId",
+            "attachmentIds": null
         }
     }
 ]

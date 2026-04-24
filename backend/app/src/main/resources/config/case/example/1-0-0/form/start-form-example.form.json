@@ -2,27 +2,54 @@
     "display": "form",
     "components": [
         {
-            "key": "html",
-            "type": "htmlelement",
-            "input": false,
-            "label": "Instructions",
-            "content": "Start a new example case. The Smtpmail plugin will call a Time API during execution.",
-            "tableView": false,
-            "refreshOnChange": false
-        },
-        {
-            "key": "name",
+            "key": "firstName",
             "type": "textfield",
             "input": true,
-            "label": "Name",
+            "label": "First name",
             "tableView": true,
-            "applyMaskOn": "change"
+            "applyMaskOn": "change",
+            "defaultValue": "Henk"
+        },
+        {
+            "key": "recipientsObject",
+            "type": "datagrid",
+            "input": true,
+            "label": "Recipients",
+            "reorder": false,
+            "initEmpty": false,
+            "tableView": false,
+            "defaultValue": [
+                {
+                    "email": "henk.example@example.com"
+                }
+            ],
+            "components": [
+                {
+                    "key": "email",
+                    "type": "textfield",
+                    "input": true,
+                    "label": "Email address",
+                    "tableView": true,
+                    "applyMaskOn": "change"
+                }
+            ],
+            "layoutFixed": false,
+            "enableRowGroups": false,
+            "addAnotherPosition": "bottom"
+        },
+        {
+            "key": "recipients",
+            "type": "hidden",
+            "input": true,
+            "label": "recipients",
+            "tableView": false,
+            "calculateValue": "data.recipientsObject.map(email=> console.log(email.email))\n\nvalue = data.recipientsObject.map(email=> email.email);"
         },
         {
             "key": "submit",
             "type": "button",
             "input": true,
-            "label": "Start",
+            "label": "Submit",
             "tableView": false,
             "disableOnInvalid": true
         }
