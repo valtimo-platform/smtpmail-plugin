@@ -2,10 +2,11 @@
 
 E-mails versturen via SMTP met bijlagen.
 
-## Documentation
+## Documentatie
 
-- [Getting Started](documentation/getting-started.md) — setup, running, and development instructions
-- [Plugin Documentation](documentation/plugin.md) — plugin details and configuration
+- [Aan de slag](documentation/getting-started.md) — installatie, gebruik en ontwikkelinstructies
+- [Plugin documentatie](documentation/plugin.md) — pluginsdetails en configuratie
+- [Release-notities](documentation/release-notes.md) — versiegeschiedenis en wijzigingen
 
 ## Contact
 
