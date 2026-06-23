@@ -1,5 +1,9 @@
 # Release notes
 
+## 2.0.5
+
+Herpublicatie zodat de plugin niet langer een vaste Valtimo-versie oplegt aan de applicatie die hem gebruikt.
+
 ## 2.0.4
 
 Ondergebracht in een eigen repository met voorbeeldapplicatie, aparte documentatie en een PR-checks workflow. Verzenden zonder gebruikersnaam en wachtwoord werkt nu ook als deze velden als lege string zijn ingevuld.
