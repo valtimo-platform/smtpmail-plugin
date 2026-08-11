@@ -1,5 +1,12 @@
 # Release notes
 
+## 2.0.7
+
+De optie Debug staat nu standaard uit; aanzetten had voorheen geen effect en zet nu het volledige mailverkeer, inclusief
+Bcc-ontvangers en de inhoud van het bericht, in de logging - gebruik dit dus alleen tijdelijk bij het zoeken naar een
+storing. Zijn er meerdere SMTP-configuraties, dan verstuurt een taak nu altijd via de configuratie die eraan gekoppeld
+is in plaats van een willekeurige, en worden het onderwerp en de e-mailadressen vóór verzenden gecontroleerd.
+
 ## 2.0.5
 
 Herpublicatie zodat de plugin niet langer een vaste Valtimo-versie oplegt aan de applicatie die hem gebruikt.

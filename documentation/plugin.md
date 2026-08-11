@@ -50,7 +50,9 @@ Create a configuration instance for the plugin and configure the following prope
 * `Username` - The email address or account name used to send mail.
 * `Password` - The authentication password
 * `Protocol` - smtp
-* `debug` - optional, set to true for development reasons
+* `debug` - optional, off by default. Only enable while troubleshooting: it writes the complete SMTP dialogue —
+  envelope recipients (including Bcc), headers and the message body — to the application log at `DEBUG` level for
+  logger `com.ritense.valtimoplugins.smtpmail.client.SmtpMailClient`. The SMTP password is never traced.
 * `Authentication` - set to true when authentication is needed
 * `STARTTLS` - set connection to SMTP Host using TLS
   Create process link between a BPMN service task and the desired plugin action.

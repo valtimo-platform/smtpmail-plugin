@@ -27,12 +27,8 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class SmtpMailAutoConfiguration {
     @Bean
-    fun smtpMailClient(
-        pluginService: PluginService,
-        storageService: TemporaryResourceStorageService,
-    ): SmtpMailClient =
+    fun smtpMailClient(storageService: TemporaryResourceStorageService): SmtpMailClient =
         SmtpMailClient(
-            pluginService = pluginService,
             storageService = storageService,
         )
 

@@ -21,6 +21,7 @@ import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimoplugins.smtpmail.client.SmtpMailClient
 import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailContentDto
 import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailContextDto
+import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailPluginPropertyDto
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import java.io.InputStream
@@ -31,14 +32,17 @@ class SmtpMailService(
     private val smtpMailClient: SmtpMailClient,
     private val storageService: TemporaryResourceStorageService,
 ) {
-    fun sendSmtpMail(mailContext: SmtpMailContextDto) {
+    fun sendSmtpMail(
+        mailContext: SmtpMailContextDto,
+        connection: SmtpMailPluginPropertyDto,
+    ) {
         val mailContent =
             prepareMailContent(
                 contentResourceId = mailContext.contentResourceId,
                 attachmentResourceIds = mailContext.attachmentResourceIds,
             )
 
-        smtpMailClient.sendEmail(mailContext, mailContent).also {
+        smtpMailClient.sendEmail(connection, mailContext, mailContent).also {
             logger.info { "Attempted to send SMTP mail with subject ${mailContext.subject}" }
         }
     }
