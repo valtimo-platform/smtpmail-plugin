@@ -70,6 +70,10 @@ Create a configuration instance for the plugin and configure the following prope
 * `contentId` - The content ID of the contents of the mail, see [options](#prepare-mail-contents) to generate content
 * `attachmentIds` - List with IDs of files in local storage are added as attachment of the mail (optional)
 
+Before sending, the plugin rejects a CR or LF character in `sender`, `fromName`, `recipients`, `cc`, `bcc` and
+`subject` to prevent mail header injection, and it rejects malformed addresses. A host without a dot — a local mail
+catcher or an internal hostname such as `dev@localhost` or `test@mailhog` — is a valid address.
+
 ### Prepare mail contents
 
 There are 2 plugins available to generate the contents of an email:

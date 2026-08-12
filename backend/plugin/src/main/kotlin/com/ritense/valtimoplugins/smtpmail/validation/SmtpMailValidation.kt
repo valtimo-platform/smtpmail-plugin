@@ -16,10 +16,20 @@
 
 package com.ritense.valtimoplugins.smtpmail.validation
 
-// Ported from the graph-mail plugin so that both mail plugins reject the same input.
+// Ported from the graph-mail plugin so that both mail plugins reject the same input, widened so
+// that a host without a dot is accepted as well.
 
-internal val EMAIL_REGEX =
-    Regex("^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9][a-zA-Z0-9.\\-]*\\.[a-zA-Z]{2,}$")
+// A single hostname label: starts and ends alphanumeric, may contain hyphens in between and is
+// at most 63 characters long.
+private const val HOST_LABEL = "[a-zA-Z0-9](?:[a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?"
+
+// The host is either a dotted domain closed off by an alphabetic top level label
+// (example.com, localhost.localdomain) or a single label without any dot. That second form
+// covers local mail catchers and internal hosts such as localhost and mailhog, which SMTP
+// accepts and which this plugin delivered to before address validation was introduced.
+private const val HOST = "(?:(?:$HOST_LABEL\\.)+[a-zA-Z]{2,63}|$HOST_LABEL)"
+
+internal val EMAIL_REGEX = Regex("^[a-zA-Z0-9._%+\\-]+@$HOST$")
 
 private const val MAX_EMAIL_LENGTH = 254
 

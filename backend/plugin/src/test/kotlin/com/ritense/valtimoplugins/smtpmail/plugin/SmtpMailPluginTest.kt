@@ -149,10 +149,56 @@ class SmtpMailPluginTest : BaseTest() {
     }
 
     @Test
+    fun `rejects a recipient address without an at sign`() {
+        assertThrows<IllegalArgumentException> { sendMail(recipients = listOf("ontvanger.example.com")) }
+        verifyNothingSent()
+    }
+
+    @Test
+    fun `rejects an empty recipient address`() {
+        assertThrows<IllegalArgumentException> { sendMail(recipients = listOf("")) }
+        verifyNothingSent()
+    }
+
+    @Test
     fun `accepts a valid mail`() {
         sendMail()
 
         verify(smtpMailService).sendSmtpMail(any(), any())
+    }
+
+    // -- Hosts without a dot, such as a local mail catcher (regression) ------------------
+
+    @Test
+    fun `accepts a recipient on a host without a dot - dev at localhost`() {
+        sendMail(recipients = listOf("dev@localhost"))
+
+        verify(smtpMailService).sendSmtpMail(any(), any())
+    }
+
+    @Test
+    fun `accepts a recipient on a host without a dot - test at mailhog`() {
+        sendMail(recipients = listOf("test@mailhog"))
+
+        verify(smtpMailService).sendSmtpMail(any(), any())
+    }
+
+    @Test
+    fun `accepts a sender, cc and bcc on a host without a dot`() {
+        sendMail(
+            sender = "dev@localhost",
+            recipients = listOf("test@mailhog"),
+            cc = listOf("cc@mailpit"),
+            bcc = listOf("bcc@localhost"),
+        )
+
+        verify(smtpMailService).sendSmtpMail(any(), any())
+    }
+
+    @Test
+    fun `still rejects CRLF in a recipient on a host without a dot`() {
+        assertThrows<IllegalArgumentException> { sendMail(recipients = listOf("dev@localhost\nBcc: evil@example.com")) }
+        verifyNothingSent()
     }
 
     private fun sendMail(
