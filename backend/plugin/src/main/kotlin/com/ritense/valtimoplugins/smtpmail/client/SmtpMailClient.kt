@@ -16,32 +16,35 @@
 
 package com.ritense.valtimoplugins.smtpmail.client
 
-import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailContentDto
 import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailContextDto
 import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailPluginPropertyDto
-import com.ritense.valtimoplugins.smtpmail.plugin.SmtpMailPlugin
+import io.github.oshai.kotlinlogging.KotlinLogging
+import jakarta.mail.Session
 import jakarta.mail.internet.MimeMessage
 import org.springframework.mail.MailSendException
-import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.JavaMailSenderImpl
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Component
+import java.io.ByteArrayOutputStream
+import java.io.OutputStream
+import java.io.PrintStream
+import java.nio.charset.StandardCharsets
 
 @SkipComponentScan
 @Component
 class SmtpMailClient(
-    private val pluginService: PluginService,
     private val storageService: TemporaryResourceStorageService,
 ) {
     fun sendEmail(
+        connection: SmtpMailPluginPropertyDto,
         mailContext: SmtpMailContextDto,
         mailContent: SmtpMailContentDto,
     ) {
         try {
-            val javaMailSender = javaMailSender()
+            val javaMailSender = javaMailSender(connection)
 
             val message: MimeMessage = javaMailSender.createMimeMessage()
 
@@ -63,9 +66,9 @@ class SmtpMailClient(
         }
     }
 
-    private fun javaMailSender(): JavaMailSender =
+    internal fun javaMailSender(connection: SmtpMailPluginPropertyDto): JavaMailSenderImpl =
         JavaMailSenderImpl().apply {
-            with(getSmtpMailPluginData()) {
+            with(connection) {
                 this@apply.host = host
                 this@apply.port = port
                 if (!username.isNullOrBlank()) this@apply.username = username
@@ -78,26 +81,65 @@ class SmtpMailClient(
                     this@apply.javaMailProperties["mail.smtp.socketFactory.class"] = "javax.net.ssl.SSLSocketFactory"
                     this@apply.javaMailProperties["mail.smtp.socketFactory.port"] = port.toString()
                 }
-                this@apply.javaMailProperties["mail.debug"] = debug
+                // Keep the AUTH exchange out of the trace even when debug is on. This is the
+                // JavaMail default; set explicitly so ambient configuration cannot flip it.
+                this@apply.javaMailProperties["mail.debug.auth"] = "false"
+            }
+
+            // Build the session ourselves so that the protocol trace is written through the
+            // logger instead of stdout, where it would bypass log level, appender and
+            // retention configuration entirely.
+            //
+            // Debug is switched on through Session.setDebug rather than the `mail.debug`
+            // property, for two reasons: the property is read with Properties.getProperty and
+            // therefore only honours String values, and setting it up front would make the
+            // Session constructor itself trace to stdout before we can redirect it.
+            session =
+                Session.getInstance(javaMailProperties).apply {
+                    debugOut = PrintStream(LineLoggingOutputStream(), true, StandardCharsets.UTF_8)
+                    setDebug(connection.debug)
+                }
+
+            if (connection.debug) {
+                logger.warn {
+                    "SMTP debug tracing is enabled for host '${connection.host}'. " +
+                        "The full SMTP dialogue - envelope recipients including Bcc, headers and message content - " +
+                        "is written to logger '$DEBUG_LOGGER_NAME' at DEBUG level."
+                }
             }
         }
 
-    private fun getSmtpMailPluginData(): SmtpMailPluginPropertyDto {
-        val pluginInstance =
-            pluginService
-                .createInstance(SmtpMailPlugin::class.java) { true }
+    /**
+     * Collects JavaMail's protocol trace line by line and hands each line to the logger.
+     */
+    private class LineLoggingOutputStream : OutputStream() {
+        private val line = ByteArrayOutputStream(INITIAL_LINE_BUFFER_SIZE)
 
-        requireNotNull(pluginInstance) { "No plugin found" }
+        override fun write(b: Int) {
+            when (b) {
+                '\n'.code -> flushLine()
+                '\r'.code -> Unit
+                else -> line.write(b)
+            }
+        }
 
-        return SmtpMailPluginPropertyDto(
-            host = pluginInstance.host,
-            port = pluginInstance.port!!,
-            username = pluginInstance.username,
-            password = pluginInstance.password,
-            protocol = pluginInstance.protocol!!,
-            debug = pluginInstance.debug!!,
-            auth = pluginInstance.auth!!,
-            startTlsEnable = pluginInstance.startTlsEnable!!,
-        )
+        override fun flush() = flushLine()
+
+        override fun close() = flushLine()
+
+        private fun flushLine() {
+            if (line.size() == 0) return
+            val message = line.toString(StandardCharsets.UTF_8)
+            line.reset()
+            logger.debug { message }
+        }
+    }
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
+
+        private val DEBUG_LOGGER_NAME = SmtpMailClient::class.java.name
+
+        private const val INITIAL_LINE_BUFFER_SIZE = 256
     }
 }
