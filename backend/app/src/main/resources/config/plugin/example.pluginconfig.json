@@ -10,7 +10,7 @@
             "password": "${SMTP_MAIL_CONFIGURATION_PASSWORD}",
             "auth": true,
             "protocol": "smtp",
-            "debug": true,
+            "debug": false,
             "startTlsEnable": true
         }
     }
