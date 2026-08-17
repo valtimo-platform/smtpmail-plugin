@@ -1,5 +1,9 @@
 # Release notes
 
+## 2.0.7
+
+Valtimo bijgewerkt naar versie 13.41.0.
+
 ## 2.0.5
 
 Herpublicatie zodat de plugin niet langer een vaste Valtimo-versie oplegt aan de applicatie die hem gebruikt.
