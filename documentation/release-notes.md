@@ -1,5 +1,9 @@
 # Release notes
 
+## 2.0.8
+
+Valtimo bijgewerkt naar versie 13.41.0.
+
 ## 2.0.7
 
 De optie Debug staat nu standaard uit; aanzetten had voorheen geen effect en zet nu het volledige mailverkeer, inclusief
