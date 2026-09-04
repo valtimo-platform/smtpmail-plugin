@@ -1,5 +1,10 @@
 # Release notes
 
+## 2.0.9
+
+Een mail kan nu ook vanuit eigen code verstuurd worden, bijvoorbeeld vanuit een geplande taak, zonder dat daar een
+lopend proces voor nodig is.
+
 ## 2.0.8
 
 Valtimo bijgewerkt naar versie 13.41.0.
