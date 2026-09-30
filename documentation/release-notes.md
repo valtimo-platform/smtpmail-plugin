@@ -1,5 +1,9 @@
 # Release notes
 
+## 2.0.10
+
+Ondersteuning voor Valtimo 13.48.0.
+
 ## 2.0.9
 
 Een mail kan nu ook vanuit eigen code verstuurd worden, bijvoorbeeld vanuit een geplande taak, zonder dat daar een
