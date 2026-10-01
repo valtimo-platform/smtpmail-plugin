@@ -15,7 +15,7 @@
             "sender": "noreply@ritense.nl",
             "fromName": "John Doe",
             "recipients": "doc:recipients",
-            "cc": null,
+            "cc": "doc:cc",
             "bcc": null,
             "subject": "Test",
             "contentId": "pv:contentId",

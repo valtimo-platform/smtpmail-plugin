@@ -11,39 +11,27 @@
             "defaultValue": "Henk"
         },
         {
-            "key": "recipientsObject",
-            "type": "datagrid",
+            "key": "recipients",
+            "type": "textfield",
             "input": true,
             "label": "Recipients",
-            "reorder": false,
-            "initEmpty": false,
-            "tableView": false,
-            "defaultValue": [
-                {
-                    "email": "henk.example@example.com"
-                }
-            ],
-            "components": [
-                {
-                    "key": "email",
-                    "type": "textfield",
-                    "input": true,
-                    "label": "Email address",
-                    "tableView": true,
-                    "applyMaskOn": "change"
-                }
-            ],
-            "layoutFixed": false,
-            "enableRowGroups": false,
-            "addAnotherPosition": "bottom"
+            "description": "One or more addresses, separated by a comma or a semicolon.",
+            "tableView": true,
+            "applyMaskOn": "change",
+            "defaultValue": "henk.example@example.com, piet.example@example.com"
         },
         {
-            "key": "recipients",
-            "type": "hidden",
+            "key": "cc",
+            "type": "textfield",
             "input": true,
-            "label": "recipients",
+            "label": "CC",
+            "description": "Stored as a list, so that both accepted shapes are covered by this form.",
+            "multiple": true,
             "tableView": false,
-            "calculateValue": "data.recipientsObject.map(email=> console.log(email.email))\n\nvalue = data.recipientsObject.map(email=> email.email);"
+            "applyMaskOn": "change",
+            "defaultValue": [
+                "cc.example@example.com"
+            ]
         },
         {
             "key": "submit",
