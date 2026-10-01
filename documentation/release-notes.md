@@ -1,5 +1,10 @@
 # Release notes
 
+## 2.0.11
+
+De velden Ontvangers, CC en BCC accepteren nu naast een lijst ook één tekstwaarde met meerdere adressen, gescheiden door
+een komma of een puntkomma.
+
 ## 2.0.10
 
 Ondersteuning voor Valtimo 13.48.0.
