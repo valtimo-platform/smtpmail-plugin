@@ -1,5 +1,10 @@
 # Release notes
 
+## 2.0.12
+
+Een uitgezet vinkje voor Authenticatie blijft nu uit wanneer een bestaande configuratie opnieuw wordt geopend en
+opgeslagen.
+
 ## 2.0.11
 
 De velden Ontvangers, CC en BCC accepteren nu naast een lijst ook één tekstwaarde met meerdere adressen, gescheiden door
