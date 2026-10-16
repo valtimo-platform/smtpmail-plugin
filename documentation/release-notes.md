@@ -1,5 +1,11 @@
 # Release notes
 
+## 2.0.13
+
+De actie 'Send mail' kan de inhoud van de e-mail nu ook direct uit een tekst of procesvariabele halen, naast een
+tijdelijk bestand. Zo kan dezelfde inhoud eerst in een gebruikerstaak bekeken worden met de e-mailvoorbeeldcomponent en
+daarna verstuurd worden.
+
 ## 2.0.12
 
 Een uitgezet vinkje voor Authenticatie blijft nu uit wanneer een bestaande configuratie opnieuw wordt geopend en
