@@ -1,5 +1,40 @@
 # Release notes
 
+## 2.0.14
+
+### Gewijzigd gedrag
+
+Controleer bij het bijwerken of bestaande configuraties en proceslinks hier nog goed op aansluiten.
+
+- **STARTTLS** - Met STARTTLS aangevinkt wordt de verbinding op poort 465 zoals voorheen direct versleuteld, en op elke
+  andere poort (zoals 587) met STARTTLS. Biedt de server geen STARTTLS aan, dan wordt er niet meer onversleuteld
+  verzonden maar mislukt het verzenden. Gebruikt de server direct TLS op een andere poort dan 465, kies dan protocol
+  smtps.
+- **Authenticatie** - Staat Authenticatie uit, dan worden gebruikersnaam en wachtwoord niet meer naar de server
+  gestuurd. Zet Authenticatie aan bij een configuratie die toch moet inloggen.
+- **Verplichte velden in 'Send mail'** - De actie 'Send mail' kan pas worden opgeslagen als ontvangers en onderwerp zijn
+  ingevuld.
+- **Time-out** - Een SMTP-server die niet reageert, laat de taak niet meer eindeloos wachten; het verzenden mislukt na
+  een time-out.
+- **Logging** - Het onderwerp van een verzonden e-mail komt niet meer in de logging.
+
+### Verbeteringen
+
+- Het veld Bijlagen accepteert nu ook één bestands-ID, of meerdere ID's gescheiden door een komma of puntkomma.
+- Bijlagen houden hun eigen bestandsnaam en krijgen het juiste bestandstype mee, in plaats van een naam als
+  'rapport.application/pdf'.
+- Staat Authenticatie aan zonder gebruikersnaam of wachtwoord, dan zegt de foutmelding dat nu ook.
+- Een ander protocol dan smtp of smtps geeft een duidelijke foutmelding.
+- De gepubliceerde backend-module trekt geen publicatie-plugin meer mee als afhankelijkheid en is nu ook vanuit Maven te
+  gebruiken.
+
+### Opgeloste problemen
+
+- Een uitgezet vinkje voor STARTTLS blijft nu uit wanneer een bestaande configuratie opnieuw wordt geopend en
+  opgeslagen.
+- Een leeggemaakt veld Bijlagen laat de actie 'Send mail' niet langer mislukken, ook in bestaande proceslinks.
+- De Nederlandse en Engelse naam van de actie 'Send mail' zijn niet langer verwisseld.
+
 ## 2.0.13
 
 De actie 'Send mail' kan de inhoud van de e-mail nu ook direct uit een tekst of procesvariabele halen, naast een

@@ -19,6 +19,7 @@ package com.ritense.valtimoplugins.smtpmail.plugin
 import com.ritense.valtimoplugins.smtpmail.BaseTest
 import com.ritense.valtimoplugins.smtpmail.dto.Email
 import com.ritense.valtimoplugins.smtpmail.dto.EmailList
+import com.ritense.valtimoplugins.smtpmail.dto.ResourceIdList
 import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailContextDto
 import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailPluginPropertyDto
 import com.ritense.valtimoplugins.smtpmail.service.SmtpMailService
@@ -64,9 +65,11 @@ class SmtpMailPluginTest : BaseTest() {
 
     @Test
     fun `passes the configured debug setting to the service`() {
+        plugin.debug = true
+
         sendMail()
 
-        assertFalse(captureConnection().debug)
+        assertTrue(captureConnection().debug)
     }
 
     // -- Explicit configuration selection ---------------------------------------------
@@ -81,6 +84,15 @@ class SmtpMailPluginTest : BaseTest() {
             assertEquals("transactional-user", username)
             assertEquals("transactional-secret", password)
         }
+    }
+
+    @Test
+    fun `falls back to smtp when the protocol field was cleared`() {
+        plugin.protocol = " "
+
+        sendMail()
+
+        assertEquals("smtp", captureConnection().protocol)
     }
 
     @Test
@@ -414,6 +426,20 @@ class SmtpMailPluginTest : BaseTest() {
         verifyNothingSent()
     }
 
+    @Test
+    fun `passes the attachment ids of the action to the service`() {
+        sendMail(attachmentIds = ResourceIdList(listOf("bijlage-1", "bijlage-2")))
+
+        assertEquals(listOf("bijlage-1", "bijlage-2"), captureContext().attachmentResourceIds)
+    }
+
+    @Test
+    fun `sends without attachments when the action has none`() {
+        sendMail(attachmentIds = null)
+
+        assertEquals(emptyList<String>(), captureContext().attachmentResourceIds)
+    }
+
     private fun sendMail(
         sender: String = "afzender@example.com",
         fromName: String? = "Gemeente",
@@ -423,6 +449,7 @@ class SmtpMailPluginTest : BaseTest() {
         subject: String = "Uw aanvraag",
         contentId: String? = "content-resource-id",
         content: String? = null,
+        attachmentIds: ResourceIdList? = null,
     ) = plugin.sendMail(
         execution = execution,
         sender = Email(sender),
@@ -433,7 +460,7 @@ class SmtpMailPluginTest : BaseTest() {
         subject = subject,
         contentId = contentId,
         content = content,
-        attachmentIds = null,
+        attachmentIds = attachmentIds,
     )
 
     private fun sendMailWithoutExecution(

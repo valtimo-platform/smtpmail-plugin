@@ -75,7 +75,12 @@ export class SendMailConfigurationComponent implements FunctionConfigurationComp
   }
 
   private handleValid(formValue: SendMailFormValue): void {
-    const valid = !!(formValue.sender && formValue[this.$contentInputType()]);
+    const valid = !!(
+      formValue.sender &&
+      formValue.recipients &&
+      formValue.subject &&
+      formValue[this.$contentInputType()]
+    );
 
     this.valid$.next(valid);
     this.valid.emit(valid);
@@ -94,7 +99,9 @@ export class SendMailConfigurationComponent implements FunctionConfigurationComp
   }
 
   private toConfiguration(formValue: SendMailFormValue): SendMailConfig {
-    const {contentInputType, content, contentId, ...config} = formValue;
+    const {contentInputType, content, contentId, attachmentIds, ...fields} = formValue;
+    // A cleared field emits '', which Valtimo cannot bind to the list property attachmentIds.
+    const config = attachmentIds ? {...fields, attachmentIds} : fields;
     return this.$contentInputType() === 'content' ? {...config, content} : {...config, contentId};
   }
 }

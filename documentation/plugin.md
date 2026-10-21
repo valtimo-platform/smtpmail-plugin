@@ -10,8 +10,8 @@
         * [Plugin action: Send Mail](#plugin-action-send-mail)
             * [Addressing multiple recipients](#addressing-multiple-recipients)
         * [Prepare mail contents](#prepare-mail-contents)
-            * [Mail Smtpmail Plugin](#mail-template-plugin)
-            * [Text Smtpmail Plugin](#text-template-plugin)
+            * [Mail Template Plugin](#mail-template-plugin)
+            * [Text Template Plugin](#text-template-plugin)
     * [Development](#development)
         * [Source code](#source-code)
         * [Dependencies](#dependencies)
@@ -27,8 +27,8 @@
 
 Send mail through SMTP with the SMTP mail plugin.
 
-> Tip: The SMTP mail Plugin can be used together with the [Mail Smtpmail Plugin](../freemarker/README.md),
-> see [prepare step](#prepare-email-with-the-mail-template-plugin)
+> Tip: The SMTP mail Plugin can be used together with the Mail Template Plugin,
+> see [prepare mail contents](#prepare-mail-contents)
 
 ### Requirements
 
@@ -46,24 +46,30 @@ Plugin actions can be linked to BPMN service tasks. Using the plugin comes down 
 Create a configuration instance for the plugin and configure the following properties:
 
 * `configurationTitle` - Title of the plugin instance
-* `Host` - SMTP Host URL
-* `Port` - port of the SMTP Mail (default is 465)
-* `Username` - The email address or account name used to send mail.
-* `Password` - The authentication password
-* `Protocol` - smtp
+* `Host` - hostname of the SMTP server, e.g. `smtp.example.com`
+* `Port` - required, port of the SMTP server. The configuration screen suggests 587
+* `Username` - The email address or account name used to send mail. Only used when `Authentication` is on
+* `Password` - The authentication password. Only used when `Authentication` is on
+* `Protocol` - optional, `smtp` (the default) or `smtps`
 * `debug` - optional, off by default. Only enable while troubleshooting: it writes the complete SMTP dialogue —
   envelope recipients (including Bcc), headers and the message body — to the application log at `DEBUG` level for
-  logger `com.ritense.valtimoplugins.smtpmail.client.SmtpMailClient`. The SMTP password is never traced.
-* `Authentication` - set to true when authentication is needed
-* `STARTTLS` - set connection to SMTP Host using TLS
-  Create process link between a BPMN service task and the desired plugin action.
+  logger `com.ritense.valtimoplugins.smtpmail.client.SmtpMailClient`. The SMTP password and account name are never traced.
+* `Authentication` - on by default, and then `Username` and `Password` are required; turn off when the SMTP server
+  accepts mail without logging in
+* `STARTTLS` - on by default; encrypts the connection with TLS. On port 465 the connection is TLS from the start
+  (implicit TLS); on any other port it is upgraded with STARTTLS, and sending fails rather than continue unencrypted
+  when the server does not offer it. In both cases the server certificate must be valid for `Host` and issued by a CA
+  the JVM trusts; add a private CA to the JVM trust store. Turn off only for a server without TLS, such as a local mail
+  catcher. With protocol `smtps` the connection is always TLS from the start, on any port, whatever this setting says
+
+Then create a process link between a BPMN service task and the desired plugin action.
 
 ### Plugin action: Send Mail
 
 `send-mail` Send the email using an SMTP Host
 
 * `sender`- Sender Email address
-* `fromName` - Sender Email name
+* `fromName` - Sender name (optional, the sender address when empty)
 * `recipients` - TO email addresses, see [addressing multiple recipients](#addressing-multiple-recipients)
 * `cc` - CC email addresses (optional)
 * `bcc` - BCC email addresses (optional)
@@ -72,7 +78,10 @@ Create a configuration instance for the plugin and configure the following prope
   [options](#prepare-mail-contents) to generate content
 * `content` - The HTML contents of the mail, usually a process variable such as `pv:mailContent`. Use this instead of
   `contentId` when the mail is reviewed in a user task before it is sent
-* `attachmentIds` - List with IDs of files in local storage are added as attachment of the mail (optional)
+* `attachmentIds` - IDs of temporary files that are added as attachments to the mail (optional): a list, or a single ID,
+  such as a process variable holding one file ID. Like the address fields, a text value is split on commas and
+  semicolons. Each attachment keeps the file name and content type stored with the
+  file; together the attachments may not exceed 25 MB before encoding
 
 Exactly one of `contentId` and `content` must be provided; the configuration screen lets you choose between them.
 
@@ -112,7 +121,7 @@ submitter controls, such as a form field, can expand to any number of recipients
 
 There are 2 plugins available to generate the contents of an email:
 
-#### Mail Smtpmail Plugin
+#### Mail Template Plugin
 
 Generate Mail contents with plugin action `Generate Mail File` with a case mail template. To review the mail before it
 is sent, use `Generate Mail Content` instead: it stores the HTML in a process variable that the e-mail preview component
@@ -121,9 +130,9 @@ can show and that `content` can point to. A temporary file may be removed before
 * `mailTemplateKey` - A Case Mail template
 * `processVariableName` - process variable name of the generated mail contents
 
-#### Text Smtpmail Plugin
+#### Text Template Plugin
 
-Generate Mail File with plugin action `Generate Text Filee`, select a case text template
+Generate Mail File with plugin action `Generate Text File`, select a case text template
 
 * `textTemplateKey` - Text Template
 * `processVariableName` - process variable name of the generated mail contents
@@ -134,8 +143,8 @@ Generate Mail File with plugin action `Generate Text Filee`, select a case text 
 
 The source code is split up into 2 modules:
 
-1. [Frontend](../../frontend/projects/valtimo-plugins/smtpmail)
-2. [Backend](.)
+1. [Frontend](../frontend/projects/plugin)
+2. [Backend](../backend/plugin)
 
 ### Dependencies
 
@@ -196,22 +205,22 @@ be added/supported.
 
 1. Make the required changes to the action in the plugin
     * at the backend:
-      [smtpMailPlugin](src/main/kotlin/com/ritense/valtimoplugins/smtpmail/plugin/SmtpMailPlugin.kt).
+      [smtpMailPlugin](../backend/plugin/src/main/kotlin/com/ritense/valtimoplugins/smtpmail/plugin/SmtpMailPlugin.kt).
     * at the frontend:
-      [smtpMailPluginModule](../../frontend/projects/valtimo-plugins/smtpmail/src/lib/smtpmail.plugin.module.ts).
+      [smtpMailPluginModule](../frontend/projects/plugin/src/lib/smtpmail.plugin.module.ts).
 2. Update the README if necessary.
 3. Increase the plugin versions:
-    * in the backend: [plugin.properties](plugin.properties).
-    * in the frontend: [package.json](../../frontend/projects/valtimo-plugins/smtpmail/package.json).
+    * in the backend: [plugin.properties](../backend/plugin/plugin.properties).
+    * in the frontend: [package.json](../frontend/projects/plugin/package.json).
 
 #### When adding a action:
 
 1. Make the required changes to the action in the plugin
     * at the backend:
-      [SmtpMailPlugin](src/main/kotlin/com/ritense/valtimoplugins/smtpmail/plugin/SmtpMailPlugin.kt).
+      [SmtpMailPlugin](../backend/plugin/src/main/kotlin/com/ritense/valtimoplugins/smtpmail/plugin/SmtpMailPlugin.kt).
     * at the frontend:
-      [SmtpMailPluginModule](../../frontend/projects/valtimo-plugins/smtpmail/src/lib/smtpmail.plugin.module.ts).
+      [SmtpMailPluginModule](../frontend/projects/plugin/src/lib/smtpmail.plugin.module.ts).
 2. Update the README if necessary.
 3. Increase the plugin versions:
-    * in the backend: [plugin.properties](plugin.properties).
-    * in the frontend: [package.json](../../frontend/projects/valtimo-plugins/smtpmail/package.json).
+    * in the backend: [plugin.properties](../backend/plugin/plugin.properties).
+    * in the frontend: [package.json](../frontend/projects/plugin/package.json).

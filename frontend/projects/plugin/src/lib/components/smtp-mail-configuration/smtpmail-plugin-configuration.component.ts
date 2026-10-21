@@ -23,7 +23,7 @@ import {PluginTranslatePipeModule} from '@valtimo/plugin';
 import {FormModule, InputModule} from '@valtimo/components';
 
 @Component({
-  selector: 'smtpmail-plugin-configuration',
+  selector: 'valtimo-smtpmail-plugin-configuration',
   templateUrl: './smtpmail-plugin-configuration.component.html',
   standalone: true,
   imports: [CommonModule, PluginTranslatePipeModule, FormModule, InputModule]

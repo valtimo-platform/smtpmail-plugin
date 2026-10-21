@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - Java 21
-- Node.js >= 20
+- Node.js 20 (see `frontend/.nvmrc`)
 - Docker & Docker Compose
 
 ## Running the application

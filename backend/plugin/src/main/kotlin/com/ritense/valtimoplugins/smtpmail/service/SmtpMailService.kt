@@ -23,8 +23,10 @@ import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailContentDto
 import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailContextDto
 import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailPluginPropertyDto
 import io.github.oshai.kotlinlogging.KotlinLogging
+import jakarta.mail.internet.ContentType
 import org.springframework.stereotype.Service
 import java.io.InputStream
+import java.io.OutputStream
 
 @SkipComponentScan
 @Service
@@ -39,37 +41,38 @@ class SmtpMailService(
         val mailContent = prepareMailContent(mailContext)
 
         smtpMailClient.sendEmail(connection, mailContext, mailContent).also {
-            logger.info { "Attempted to send SMTP mail with subject ${mailContext.subject}" }
+            // No subject or addresses: they often carry personal data.
+            val recipientCount = with(mailContext) { recipients.size + ccList.size + bccList.size }
+            logger.info {
+                "Sent SMTP mail to $recipientCount recipient(s) with ${mailContent.attachments.size} attachment(s)"
+            }
         }
     }
 
     private fun prepareMailContent(mailContext: SmtpMailContextDto): SmtpMailContentDto {
         val attachments: MutableList<SmtpMailContentDto.Attachment> = mutableListOf()
 
-        var totalAttachmentsSize = 0
+        var totalAttachmentsSize = 0L
 
         mailContext.attachmentResourceIds.forEach { attachmentResourceId ->
-            totalAttachmentsSize +=
-                checkForMaxAttachmentSize(
-                    storageService.getResourceContentAsInputStream(attachmentResourceId),
-                    totalAttachmentsSize,
-                )
-
             val attachmentMetadata = storageService.getResourceMetadata(attachmentResourceId)
-            val fileName =
-                if ((attachmentMetadata[MetadataType.FILE_NAME.key] as String?)?.contains('.') == true) {
-                    attachmentMetadata[MetadataType.FILE_NAME.key] as String
-                } else if (attachmentMetadata[MetadataType.FILE_NAME.key] != null &&
-                    attachmentMetadata[MetadataType.CONTENT_TYPE.key] != null
-                ) {
-                    "${attachmentMetadata[MetadataType.FILE_NAME.key]}.${attachmentMetadata[MetadataType.CONTENT_TYPE.key]}"
-                } else if (attachmentMetadata[MetadataType.CONTENT_TYPE.key] != null) {
-                    "attachment.${attachmentMetadata[MetadataType.CONTENT_TYPE.key]}"
-                } else {
-                    attachmentMetadata[MetadataType.FILE_NAME.key] as String? ?: "attachment"
-                }
+            totalAttachmentsSize += attachmentSize(attachmentResourceId, attachmentMetadata)
+            if (totalAttachmentsSize > MAX_SIZE_EMAIL_BODY_IN_BYTES) {
+                throw IllegalStateException("Email exceeds max size of 25 mb")
+            }
 
-            attachments.add(SmtpMailContentDto.Attachment(fileName, attachmentResourceId))
+            // Metadata is set by whoever stored the file, so it is cleaned before it ends up in the part's headers.
+            val fileName =
+                (attachmentMetadata[MetadataType.FILE_NAME.key] as String?)
+                    ?.replace(CONTROL_CHARACTERS, " ")
+                    ?.substringAfterLast('/')
+                    ?.substringAfterLast('\\')
+                    ?.trim()
+                    ?.takeIf { it.isNotEmpty() } ?: "attachment"
+            // Only type/subtype is kept: parameters can carry line breaks, and without a usable type Spring derives one.
+            val contentType = (attachmentMetadata[MetadataType.CONTENT_TYPE.key] as String?)?.toBaseContentType()
+
+            attachments.add(SmtpMailContentDto.Attachment(fileName, attachmentResourceId, contentType))
         }
 
         return SmtpMailContentDto(
@@ -80,22 +83,26 @@ class SmtpMailService(
 
     private fun fetchMailMessage(contentResourceId: String?): String {
         checkNotNull(contentResourceId) { "Mail has neither content nor a contentResourceId" }
-        logger.debug { "Fetching mail message with resourceId '$contentResourceId" }
+        logger.debug { "Fetching mail message with resourceId '$contentResourceId'" }
         return storageService.getResourceContentAsInputStream(contentResourceId).toPlainText()
     }
 
-    private fun checkForMaxAttachmentSize(
-        attachment: InputStream,
-        totalAttachmentSize: Int,
-    ): Int {
-        val attachmentSize = attachment.readAllBytes().size
+    // The size the storage recorded saves reading the file twice; without it the file is counted while streaming.
+    private fun attachmentSize(
+        attachmentResourceId: String,
+        attachmentMetadata: Map<String, Any>,
+    ): Long =
+        attachmentMetadata[MetadataType.FILE_SIZE.key]?.toString()?.toLongOrNull()
+            ?: storageService.getResourceContentAsInputStream(attachmentResourceId).use {
+                it.transferTo(OutputStream.nullOutputStream())
+            }
 
-        if (totalAttachmentSize + attachmentSize > MAX_SIZE_EMAIL_BODY_IN_BYTES) {
-            throw IllegalStateException("Email exceeds max size of 25 mb")
-        }
-
-        return attachmentSize
-    }
+    // JavaMail would parse a multipart attachment as MIME structure, which fails without the stripped boundary.
+    private fun String.toBaseContentType(): String? =
+        runCatching { ContentType(this) }
+            .getOrNull()
+            ?.takeUnless { it.primaryType.equals("multipart", ignoreCase = true) }
+            ?.baseType
 
     private fun InputStream.toPlainText(): String =
         use { stream ->
@@ -105,6 +112,8 @@ class SmtpMailService(
     companion object {
         val logger = KotlinLogging.logger {}
 
-        private const val MAX_SIZE_EMAIL_BODY_IN_BYTES: Int = 25000000 // 25mb
+        private val CONTROL_CHARACTERS = Regex("\\p{Cntrl}")
+
+        private const val MAX_SIZE_EMAIL_BODY_IN_BYTES: Long = 25_000_000 // 25mb
     }
 }

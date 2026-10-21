@@ -24,6 +24,7 @@ import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailPluginPropertyDto
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.mail.Session
 import jakarta.mail.internet.MimeMessage
+import org.springframework.core.io.InputStreamSource
 import org.springframework.mail.MailSendException
 import org.springframework.mail.javamail.JavaMailSenderImpl
 import org.springframework.mail.javamail.MimeMessageHelper
@@ -43,47 +44,70 @@ class SmtpMailClient(
         mailContext: SmtpMailContextDto,
         mailContent: SmtpMailContentDto,
     ) {
+        // Outside the try, so a configuration error is reported as itself.
+        val javaMailSender = javaMailSender(connection)
         try {
-            val javaMailSender = javaMailSender(connection)
-
             val message: MimeMessage = javaMailSender.createMimeMessage()
 
-            with(MimeMessageHelper(message, true)) {
+            with(MimeMessageHelper(message, true, StandardCharsets.UTF_8.name())) {
                 setFrom(mailContext.sender.address, mailContext.fromName)
                 mailContext.recipients.forEach { addTo(it.address) }
                 mailContext.ccList.forEach { addCc(it.address) }
                 mailContext.bccList.forEach { addBcc(it.address) }
                 setSubject(mailContext.subject)
                 setText(mailContent.mailMessage, true)
-                mailContent.attachments.forEach {
-                    addAttachment(it.fileName) { storageService.getResourceContentAsInputStream(it.fileResourceId) }
+                mailContent.attachments.forEach { attachment ->
+                    val source =
+                        InputStreamSource { storageService.getResourceContentAsInputStream(attachment.fileResourceId) }
+                    if (attachment.contentType == null) {
+                        addAttachment(attachment.fileName, source)
+                    } else {
+                        addAttachment(attachment.fileName, source, attachment.contentType)
+                    }
                 }
 
                 javaMailSender.send(message)
             }
         } catch (e: Exception) {
-            throw MailSendException("Failed to send mail", e)
+            throw MailSendException("Failed to send mail: ${e.message}", e)
         }
     }
 
     internal fun javaMailSender(connection: SmtpMailPluginPropertyDto): JavaMailSenderImpl =
         JavaMailSenderImpl().apply {
             with(connection) {
-                this@apply.host = host
+                this@apply.host = host.trim()
                 this@apply.port = port
-                if (!username.isNullOrBlank()) this@apply.username = username
-                if (!password.isNullOrBlank()) this@apply.password = password
+                // JavaMail would only report 'no password specified?' at connect time.
+                require(!auth || (!username.isNullOrBlank() && !password.isNullOrBlank())) {
+                    "Authentication is on but the username or password is empty"
+                }
+                // JavaMail logs in whenever it has credentials, so they are only handed over when authentication is on.
+                if (auth && !username.isNullOrBlank()) this@apply.username = username
+                if (auth && !password.isNullOrBlank()) this@apply.password = password
+                val protocol = protocol.trim().lowercase()
+                require(protocol in SUPPORTED_PROTOCOLS) { "Unsupported protocol '$protocol', use smtp or smtps" }
                 this@apply.protocol = protocol
                 this@apply.javaMailProperties["mail.transport.protocol"] = protocol
-                this@apply.javaMailProperties["mail.smtp.auth"] = auth
+                // JavaMail only reads the properties of the protocol in use, e.g. mail.smtps.* for smtps.
+                val prefix = "mail.$protocol"
+                this@apply.javaMailProperties["$prefix.auth"] = auth.toString()
+                this@apply.javaMailProperties["$prefix.connectiontimeout"] = CONNECTION_TIMEOUT_MILLIS.toString()
+                this@apply.javaMailProperties["$prefix.timeout"] = READ_TIMEOUT_MILLIS.toString()
+                this@apply.javaMailProperties["$prefix.writetimeout"] = WRITE_TIMEOUT_MILLIS.toString()
                 if (startTlsEnable) {
-                    this@apply.javaMailProperties["mail.smtp.starttls.enable"] = true
-                    this@apply.javaMailProperties["mail.smtp.socketFactory.class"] = "javax.net.ssl.SSLSocketFactory"
-                    this@apply.javaMailProperties["mail.smtp.socketFactory.port"] = port.toString()
+                    // Port 465 is implicit TLS (RFC 8314); any other port must upgrade with STARTTLS, never fall back to plaintext.
+                    if (port == IMPLICIT_TLS_PORT) {
+                        this@apply.javaMailProperties["$prefix.ssl.enable"] = "true"
+                    } else {
+                        this@apply.javaMailProperties["$prefix.starttls.enable"] = "true"
+                        this@apply.javaMailProperties["$prefix.starttls.required"] = "true"
+                    }
+                    this@apply.javaMailProperties["$prefix.ssl.checkserveridentity"] = "true"
                 }
-                // Keep the AUTH exchange out of the trace even when debug is on. This is the
-                // JavaMail default; set explicitly so ambient configuration cannot flip it.
+                // Keep the AUTH exchange and the account name out of the trace even when debug is on.
                 this@apply.javaMailProperties["mail.debug.auth"] = "false"
+                this@apply.javaMailProperties["mail.debug.auth.username"] = "false"
             }
 
             // Build the session ourselves so that the protocol trace is written through the
@@ -141,5 +165,16 @@ class SmtpMailClient(
         private val DEBUG_LOGGER_NAME = SmtpMailClient::class.java.name
 
         private const val INITIAL_LINE_BUFFER_SIZE = 256
+
+        private const val IMPLICIT_TLS_PORT = 465
+
+        private val SUPPORTED_PROTOCOLS = setOf("smtp", "smtps")
+
+        // RFC 5321 4.5.3.2: a relay may take up to 10 minutes to accept the data, so a shorter wait risks a resend.
+        private const val CONNECTION_TIMEOUT_MILLIS = 10_000
+
+        private const val READ_TIMEOUT_MILLIS = 600_000
+
+        private const val WRITE_TIMEOUT_MILLIS = 180_000
     }
 }
