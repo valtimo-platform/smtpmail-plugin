@@ -23,5 +23,6 @@ data class SmtpMailContentDto(
     data class Attachment(
         val fileName: String,
         val fileResourceId: String,
+        val contentType: String? = null,
     )
 }

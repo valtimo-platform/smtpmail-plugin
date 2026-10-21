@@ -23,6 +23,7 @@ import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.valtimoplugins.smtpmail.dto.Email
 import com.ritense.valtimoplugins.smtpmail.dto.EmailList
+import com.ritense.valtimoplugins.smtpmail.dto.ResourceIdList
 import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailContextDto
 import com.ritense.valtimoplugins.smtpmail.dto.SmtpMailPluginPropertyDto
 import com.ritense.valtimoplugins.smtpmail.service.SmtpMailService
@@ -78,7 +79,7 @@ class SmtpMailPlugin(
         @PluginActionProperty bcc: EmailList?,
         @PluginActionProperty subject: String,
         @PluginActionProperty contentId: String?,
-        @PluginActionProperty attachmentIds: List<String>?,
+        @PluginActionProperty attachmentIds: ResourceIdList?,
         @PluginActionProperty content: String? = null,
     ) = sendMail(
         sender = sender,
@@ -88,7 +89,7 @@ class SmtpMailPlugin(
         bcc = bcc?.addresses,
         subject = subject,
         contentId = contentId,
-        attachmentIds = attachmentIds,
+        attachmentIds = attachmentIds?.ids,
         content = content,
     )
 
@@ -133,7 +134,7 @@ class SmtpMailPlugin(
                     subject = subject,
                     contentResourceId = contentId.takeUnless { it.isNullOrBlank() },
                     content = content.takeUnless { it.isNullOrBlank() },
-                    attachmentResourceIds = attachmentIds ?: emptyList(),
+                    attachmentResourceIds = attachmentIds.orEmpty().map { it.trim() }.filter { it.isNotEmpty() },
                 ),
             connection = getConnectionProperties(),
         )
@@ -145,7 +146,7 @@ class SmtpMailPlugin(
             port = port ?: DEFAULT_PORT,
             username = username,
             password = password,
-            protocol = protocol ?: DEFAULT_PROTOCOL,
+            protocol = protocol?.takeIf { it.isNotBlank() } ?: DEFAULT_PROTOCOL,
             debug = debug ?: DEFAULT_DEBUG,
             auth = auth ?: DEFAULT_AUTH,
             startTlsEnable = startTlsEnable ?: DEFAULT_START_TLS_ENABLE,

@@ -30,10 +30,6 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.slf4j.LoggerFactory
-import java.io.PrintStream
-import java.net.ServerSocket
-import java.nio.charset.StandardCharsets
-import java.util.concurrent.Executors
 
 /**
  * Sends a mail to a throwaway SMTP server to prove that the JavaMail protocol trace is written
@@ -75,22 +71,19 @@ class SmtpMailDebugTraceTest : BaseTest() {
         val appender = ListAppender<ILoggingEvent>().apply { start() }
         val originalLevel = logger.level
 
-        ServerSocket(0).use { server ->
-            val pool = Executors.newSingleThreadExecutor()
+        FakeSmtpServer().use { server ->
             try {
-                pool.submit { fakeSmtpServer(server) }
                 logger.addAppender(appender)
                 logger.level = level
 
                 SmtpMailClient(storageService = mock()).sendEmail(
-                    connection = connection(port = server.localPort, debug = debug),
+                    connection = connection(port = server.port, debug = debug),
                     mailContext = mailContext(),
                     mailContent = SmtpMailContentDto(mailMessage = "<p>Hallo</p>", attachments = emptyList()),
                 )
             } finally {
                 logger.detachAppender(appender)
                 logger.level = originalLevel
-                pool.shutdownNow()
             }
         }
 
@@ -122,33 +115,4 @@ class SmtpMailDebugTraceTest : BaseTest() {
             contentResourceId = "content-resource-id",
             attachmentResourceIds = emptyList(),
         )
-
-    /**
-     * The bare minimum of RFC 5321 needed to get a message accepted.
-     */
-    private fun fakeSmtpServer(server: ServerSocket) {
-        server.accept().use { socket ->
-            val reader = socket.getInputStream().bufferedReader()
-            val writer = PrintStream(socket.getOutputStream(), true, StandardCharsets.UTF_8)
-            writer.print("220 localhost fake ESMTP\r\n")
-            while (true) {
-                val line = reader.readLine() ?: return
-                when {
-                    line.startsWith("EHLO", true) -> writer.print("250-localhost\r\n250 OK\r\n")
-                    line.startsWith("DATA", true) -> {
-                        writer.print("354 Start mail input\r\n")
-                        while (true) {
-                            if ((reader.readLine() ?: return) == ".") break
-                        }
-                        writer.print("250 OK queued\r\n")
-                    }
-                    line.startsWith("QUIT", true) -> {
-                        writer.print("221 Bye\r\n")
-                        return
-                    }
-                    else -> writer.print("250 OK\r\n")
-                }
-            }
-        }
-    }
 }

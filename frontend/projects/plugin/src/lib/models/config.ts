@@ -38,7 +38,7 @@ interface SendMailConfig {
     subject: string;
     contentId?: string;
     content?: string;
-    attachmentIds: string;
+    attachmentIds?: string;
 }
 
 export {
